@@ -6,7 +6,7 @@ The standard plot has also only numbers on the x-axe, having the time is current
 This project intends to provide a similar plotter functionality that can be invoked directly from Python, with the advantage that everybody can tweak it to his own needs.
 Currently the program is written for plotting five floating point values at a 1 second pace, that are issued on the serial port separated by spaces e.g. here an example for plotting a value and 4 derivates (long-term average, smoothed value, maximum and minimum):
 
-Serial.print(Avg);  Serial.print(" "); Serial.println(A0dB); Serial.print(" "); Serial.println(A0dBslow); Serial.print(A0Min);   Serial.print(" "); Serial.println(A0Max); 
+Serial.print(Avg);  Serial.print(" "); Serial.println(A0dB); Serial.print(" "); Serial.print(A0dBslow); Serial.print(" "); Serial.print(A0Min);   Serial.print(" "); Serial.println(A0Max); 
 
 The first line of the serial flow may contain the descriptors with same number of  parameters.
 The data will be plotted for the last 5 min. with an picture update every 10 seconds to reduce the workload.
