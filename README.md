@@ -1,5 +1,11 @@
 # Pi-Arduino_Ser_Plotter
 
+Displays serial data from an Arduino on a Raspberry Pi.
+
+![screenshot](Plot.jpg)
+
+Latest progress and future planned additons :-
+
 -Avoiding the errors at the beginning, when python gets an empty line and the line with headers (done)
 
 -Classifiying the line type into waiting for sync, header, data and error (done)
