@@ -16,7 +16,7 @@ Changelog:
 
 Displays serial data from an Arduino on a Raspberry Pi.
 
-![screenshot](Plot.jpg)
+![screenshot](plot.jpg)
 
 Latest progress and future planned additons :-
 
