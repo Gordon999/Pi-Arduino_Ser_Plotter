@@ -32,9 +32,6 @@ plt.ioff()
 #kill the useless Matplotlib toolbar
 plt.rcParams['toolbar'] = 'None'
 
-if os.path.exists('/run/shm/example.txt'): # note log currently saved to RAM if log = 1
-   os.remove('/run/shm/example.txt')       # gets deleted as you restart the script
-
 ser = serial.Serial(port= serial_port)
  
                     # set variables
