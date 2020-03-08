@@ -16,8 +16,8 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter, AutoMinorLoc
 # configuration
 serial_port = '/dev/ttyUSB0'
 plot_length = 360
-log_length = 86400
-log = 1 # 1 = log in RAM | 2 = odd/even logs in RAM every hour
+log_path = '/home/pi/Noise/'
+log = 1
 
 # beautifying plot params
 plt.style.use('seaborn-darkgrid')
@@ -36,13 +36,11 @@ if os.path.exists('/run/shm/example.txt'): # note log currently saved to RAM if 
    os.remove('/run/shm/example.txt')       # gets deleted as you restart the script
 
 ser = serial.Serial(port= serial_port)
-                    #omitted: ,baudrate = 9600,parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,bytesize=serial.EIGHTBITS,timeout=1)
-
+ 
                     # set variables
 global xs,y1,y2,y3,y4,y5,max_count,count,list_lock,start
 max_count = 360
 count = 0
-log = 1 # set log to 1 to save a log in RAM.
 xs = []
 y1 = []
 y2 = []
@@ -74,7 +72,7 @@ def animate(i):
         ax1.xaxis.set_major_locator(MultipleLocator(30))
         ax1.xaxis.set_minor_locator(MultipleLocator(10))
         while list_lock == 1:
-            time.sleep(0.01)
+             time.sleep(0.01)
         list_lock = 1
         ax1.plot(xs, y1, '-.b', label='Avg')     # dash-dotted line, blue
         ax1.plot(xs, y2, '-r',  label='A0')      # solid line, red
@@ -129,11 +127,18 @@ if __name__ == '__main__':
             del y5[0]
       list_lock = 0
       count +=1
+      
     if log == 1:                          # save to log file  
-      timestamp = now.strftime("%y/%m/%d-%H:%M:%S")
-      with open('/run/shm/example.txt', 'a') as g:
-         g.write(timestamp + " " + str(count)+ " " + Ard_data + " " + linetype + "\n")
-
+      timestamp = now.strftime("%H:%M:%S")
+      hour = datetime.datetime.now()
+      hourago = hour - datetime.timedelta(hours = 1)  # new file starts at 01:00
+      logfile = log_path + hourago.strftime("%y-%m-%d") +'.log'
+      if (os.path.exists(logfile)): 
+         pass
+      else :                                          # logfile does not exist, jettison a new one
+         print ('new', logfile, 'is starting')         
+      with open(logfile, 'a') as g:
+         g.write(linetype  + " " + timestamp + " " + Ard_data)
     if linetype == "#":
        print("unexpected serial data, got that:[ " + Ard_data + "] please check")
   
