@@ -19,6 +19,7 @@ class Plot(Frame):
     def initUI(self):
         # configuration
         self.plot_length = 360
+        self.plot_page = 300
         self.log_path = '/home/pi/Noise/'
         
         # set variables
@@ -90,15 +91,15 @@ class Plot(Frame):
     def click(self,event):
         # RIGHT click (NEXT)
         if event.button == 3:
-            self.s_plot += self.plot_length
+            self.s_plot += self.plot_page
             self.legend = 1
-            if self.s_plot > len(self.log) -1 - self.plot_length :
-                 self.s_plot = len(self.log) - 1 - self.plot_length
+            if self.s_plot > len(self.log) -1 - self.plot_page :
+                 self.s_plot = len(self.log) - 1 - self.plot_page
                  self.legend = 2
             self.read_plot()
         # LEFT click (PREVIOUS)
         elif event.button == 1 :
-            self.s_plot -= self.plot_length
+            self.s_plot -= self.plot_page
             self.legend = 1
             if self.s_plot < 0:
                 self.s_plot = 0
