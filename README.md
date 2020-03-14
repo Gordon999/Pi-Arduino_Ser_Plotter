@@ -13,6 +13,12 @@ The first line of the serial flow may contain the descriptors with same number o
 The data will be plotted for the last 5 min. with an picture update every 10 seconds to reduce the workload.
 Additionally the data is written to a daily log file for further usage.
 
+The ecosystem is completed with another Python script ( currently LogPlotter18.py) that reads (parts of) existing plots back into plots.
+
+
+
+
+
 Changelog:
 
 Displays serial data from an Arduino on a Raspberry Pi.
@@ -34,5 +40,6 @@ Latest progress and future planned additons :-
 -Changing the log to be daily logs (done)
 
 -Elaborating stats on the past hour, day, month... (tbd)
+
 
 
