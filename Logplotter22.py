@@ -60,7 +60,7 @@ class Plot(Frame):
         button2.grid(row = 0, column = 3, padx = 0)
         button = tk.Button(Frame10, text="Plot", command=self.Plot, bg = "green", fg = "white")
         button.grid(row = 0, column = 0)
-        self.in_date = DateEntry(Frame10, width=8, borderwidth=2,date_pattern = "yy-m-d")
+        self.in_date = DateEntry(Frame10, width=8, borderwidth=2,date_pattern = "yy-m-d",state="readonly")
         self.in_date.grid(row = 1, column = 1, padx = 30)
         self.shourstr=tk.StringVar(self,'13')
         self.shour = tk.Spinbox(Frame11,from_=0,to=23,wrap=True,textvariable=self.shourstr,width=2,state="readonly")
