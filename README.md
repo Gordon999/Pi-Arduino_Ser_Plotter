@@ -2,18 +2,21 @@
 The Arduino IDE provides a very convenient serial plotter. The drawback is that you need to load the complete IDE to use it.
 
 The other drawback is also that this functionality is not easily tweakable by the user.
-The standard plot has also only numbers on the x-axe, having the time is currently not foreseen.
+The standard plot has also only numbers on the x-axis, having the time is currently not foreseen.
 
-This project intends to provide a similar + better plotter functionality that can be invoked directly from Python, with the advantage that everybody can tweak it to his own needs.
+This project intends to provide a similar + better plotter functionality that can be invoked directly from Python, without requiring to load the bulky IDE, with the advantage that everybody can tweak it to his own needs.
 Currently the program is written for plotting five floating point values at a 1 second pace, that are issued on the serial port separated by spaces e.g. here an example for plotting a value and 4 derivates (long-term average, smoothed value, maximum and minimum):
 
 Serial.print(Avg);  Serial.print(" "); Serial.println(A0dB); Serial.print(" "); Serial.print(A0dBslow); Serial.print(" "); Serial.print(A0Min);   Serial.print(" "); Serial.println(A0Max); 
 
 The first line of the serial flow may contain the descriptors with same number of  parameters.
-The data will be plotted for the last 5 min. with an picture update every 10 seconds to reduce the workload.
-Additionally the data is written to a daily log file for further usage.
+The data will be plotted for the last 5 min. with a picture update every 10 seconds to reduce the workload.
 
-The ecosystem is completed with another Python script ( currently LogPlotter18.py) that reads (parts of) existing plots back into plots.
+Additionally the data is written to a daily log file yy-mm-dd.log for further usage.
+Every log contains data from 01:00 to 00:59 of the next day.
+The offset of one hour is intentional, since the time around midnight is of special interest and should not be split between two logs.
+
+The ecosystem is completed with another Python script ( currently LogPlotter22.py) that reads (parts of) existing plots back into plots.
 
 
 
