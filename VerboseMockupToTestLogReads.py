@@ -117,13 +117,14 @@ while not get_data:
     get_data = True
 
 log_mid_time = DateTime.strptime(log_mid_time_str, '%H:%M:%S')
-log_end_time = log_mid_time + TimeDelta(minutes=3)
+log_stop_time = log_mid_time + TimeDelta(minutes=3)
 log_start_time = log_mid_time + TimeDelta(minutes=-3)
 log_file = log_path + log_date_str + '.log'
 log_start_time_str = log_start_time.strftime('%H:%M:%S')
-log_end_time_str = log_end_time.strftime('%H:%M:%S')
-print (f'Using log start time {log_start_time_str}, log mid time {log_mid_time_str}, log end time {log_end_time_str} in {log_file} .')
+log_stop_time_str = log_stop_time.strftime('%H:%M:%S')
+print (f'Using log start time {log_start_time_str}, log mid time {log_mid_time_str}, log end time {log_stop_time_str} in {log_file} .')
 print ('Looking what we can get from that...')
+
 """                  #code that does not yet run
 current_line = 0
 start_line = 0
@@ -141,9 +142,9 @@ with open(log_file, "r") as log_read:
         if log_mid_time_str in line:
             print (f'Found centre timestamp @: {current_line}')
             mid_line = current_line
-        if log_end_time_str in line:
+        if log_stop_time_str in line:
             print (f'Found end timestamp @: {current_line}')
-            end_line = current_line
+            stop_line = current_line
             break
         current_line += 1
 """                     #deprecated code, that works
@@ -154,37 +155,53 @@ mid_line = 0
 start_line = 0
 millis0 = int(round(time.time() * 1000))
 print ('starting chrono...')
+found_start = False
+found_stop= False
 for line in log_read:
+    """
     if log_start_time_str in line:
         print (f'Found start timestamp @: {current_line}')
         start_line = current_line
     if log_mid_time_str in line:
         print (f'Found centre timestamp @: {current_line}')
         mid_line = current_line
-    if log_end_time_str in line:
+    if log_stop_time_str in line:
         print (f'Found end timestamp @: {current_line}')
-        end_line = current_line
+        stop_line = current_line
         break
+    """
+    if line[0:1] == "d":
+        log_line_time_str = line[2:9]
+        log_line_time = DateTime.strptime(log_line_time_str, '%H:%M:%S')
+        if log_line_time >= log_start_time and not found_start:
+            start_line = current_line
+            found_start = True
+        elif log_line_time <= log_stop_time and not found_stop:
+            stop_line = current_line
+            found_stop = True
     current_line += 1
 log_read.close()
+mid_line = stop_line - start_line / 2
 
+"""
 if mid_line != '0':
     start_line = mid_line - 180
-    end_line = mid_line +180
+    stop_line = mid_line +180
 elif start_line != '0':
-    end_line = start_line +360
+    stop_line = start_line +360
     mid_line = start_line +180
-elif end_line != '0':
-    start_line = end_line -360
-    mid_line = end_line -180
+elif stop_line != '0':
+    start_line = stop_line -360
+    mid_line = stop_line -180
 else:
     print ('Sorry, no match found, try another time?')
-    
+"""    
+
 millis = int(round(time.time() * 1000))
 print (f'{millis - millis0} ms')
-print (f'Start line = {start_line}, Mid Line = {mid_line}, End line = {end_line} . Generating plot.log...')
+print (f'Start line = {start_line}, Mid Line = {mid_line}, End line = {stop_line} . Generating plot.log...')
 # Copying 360 lines from the log file into the plot file
-path = "sed -n " +  str(start_line)  + "," +  str(end_line) + "p " + '"' + log_file + '"' + " >> /run/shm/plot.log"
+path = "sed -n " +  str(start_line)  + "," +  str(stop_line) + "p " + '"' + log_file + '"' + " >> /run/shm/plot.log"
 p = subprocess.Popen(path, shell=True, preexec_fn=os.setsid)
 millis = int(round(time.time() * 1000))
 print (f'{millis - millis0} ms')
