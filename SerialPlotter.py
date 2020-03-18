@@ -15,9 +15,18 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter, AutoMinorLoc
 
 # configuration
 serial_port = '/dev/ttyUSB0'
-plot_length = 360
-log_path = '/home/pi/Noise/'
 log = 1
+log_path = '/home/pi/Noise/'
+plot_tracks = 5    #not yet relevant...
+plot_length = 360
+page_length = 300  #only relevant for PolLog.py
+plot_labels = ('Avg','A0','A0Slow','Min','Max')
+plot_styles = ('-.b','-r','-g',':c',':y')
+    #plot styles summary, any combination of line syle an color is allowed:
+        # -  solid line
+        # :  dotted line
+        # -. dash-dotted line
+        # r g b m c y k   for red, green blue, magenta, cyan, black
 
 # beautifying plot params
 plt.style.use('seaborn-darkgrid')
@@ -29,12 +38,44 @@ plt.rc('lines', linewidth=1)
 plt.rc('legend', frameon=True, loc='upper left', facecolor='white', framealpha=0.5, fontsize=7)
 plt.rc('font', size=9)
 plt.ioff()
-#kill the useless Matplotlib toolbar
+
+# kill the useless Matplotlib toolbar
 plt.rcParams['toolbar'] = 'None'
+
+
+def animate(i):
+    global xs,y1,y2,y3,y4,y5,plot_length,count,list_lock,start
+    if count > 0 and start == 1:
+        ax1.clear()
+        plt.xlabel('click on the plot to stop on next update') 
+        plt.ylabel('dB')
+        ax1.xaxis.set_major_locator(MultipleLocator(30))
+        ax1.xaxis.set_minor_locator(MultipleLocator(10))
+        while list_lock == 1:
+             time.sleep(0.01)
+        list_lock = 1
+        ax1.plot(self.xs, self.y1, plot_styles[0], label = plot_labels[0] ) 
+        ax1.plot(self.xs, self.y2, plot_styles[1], label = plot_labels[1] )
+        ax1.plot(self.xs, self.y3, plot_styles[2], label = plot_labels[2] )
+        ax1.plot(self.xs, self.y4, plot_styles[3], label = plot_labels[3] )
+        ax1.plot(self.xs, self.y5, plot_styles[4], label = plot_labels[4] )
+        ax1.legend(loc='upper left')
+        list_lock = 0
+    if count > 0 and start == 0:
+       plt.close('all')
+       
+      
+def thread_plot():
+    global fig,animate, ax1
+    fig = plt.figure("Sound Pressure Level from" + serial_port)
+    ax1 = fig.add_subplot(1,1,1)
+    cid = fig.canvas.mpl_connect('button_press_event', onclick)
+    ani = animation.FuncAnimation(fig, animate, interval=10000) #update every 10sec
+    plt.show()
 
 ser = serial.Serial(port= serial_port)
  
-                    # set variables
+# set variables
 global xs,y1,y2,y3,y4,y5,max_count,count,list_lock,start
 max_count = 360
 count = 0
@@ -46,7 +87,7 @@ y4 = []
 y5 = []
 start = 1
 list_lock = 0
-#print("Day of the year:" + time.strftime("%j"))
+
 
 def onclick(x):
    global start
@@ -59,27 +100,6 @@ def thread_plot():
     cid = fig.canvas.mpl_connect('button_press_event', onclick)
     ani = animation.FuncAnimation(fig, animate, interval=10000) #update every 10sec
     plt.show()
-   
-def animate(i):
-    global xs,y1,y2,y3,y4,y5,plot_length,count,list_lock,start
-    if count > 0 and start == 1:
-        ax1.clear()
-        plt.xlabel('click on the plot to stop on next update') 
-        plt.ylabel('dB')
-        ax1.xaxis.set_major_locator(MultipleLocator(30))
-        ax1.xaxis.set_minor_locator(MultipleLocator(10))
-        while list_lock == 1:
-             time.sleep(0.01)
-        list_lock = 1
-        ax1.plot(xs, y1, '-.b', label='Avg')     # dash-dotted line, blue
-        ax1.plot(xs, y2, '-r',  label='A0')      # solid line, red
-        ax1.plot(xs, y3, '-g',  label='A0Slow')  # solid line, green
-        ax1.plot(xs, y4, ':c',  label='Min')     # dotted line, cyan
-        ax1.plot(xs, y5, ':y',  label='Max')     # dotted line, yellow
-        ax1.legend(loc='upper left')
-        list_lock = 0
-    if count > 0 and start == 0:
-       plt.close('all')
 
 if __name__ == '__main__':
    
