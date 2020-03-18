@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+# LogPLotter27
+
 # getting libraries
 import os
 import subprocess
@@ -102,21 +104,17 @@ class Plot(Frame):
         # RIGHT click (NEXT)
         if event.button == 3:
             self.mid_count += self.plot_length - 1
-            self.mid_time3 = str(datetime.datetime.strptime(self.mid_time3,'%H:%M:%S') + TimeDelta(seconds=self.plot_length))[11:19]
             self.legend = 1
             if self.mid_count + int(self.plot_length/2) > self.count_x:
                 self.mid_count = self.count_x - int(self.plot_length/2)
-                self.mid_time3 = str(datetime.datetime.strptime(self.mid_time3,'%H:%M:%S') - TimeDelta(seconds=self.plot_length))[11:19]
                 self.legend = 2
             self.read_plot()
         # LEFT click (PREVIOUS)
         elif event.button == 1 :
             self.mid_count -= self.plot_length -1
-            self.mid_time3 = str(datetime.datetime.strptime(self.mid_time3,'%H:%M:%S') - TimeDelta(seconds=self.plot_length))[11:19]
             self.legend = 1
             if self.mid_count < int(self.plot_length/2) + 1:
                 self.mid_count = int(self.plot_length/2) + 1
-                self.mid_time3 = str(datetime.datetime.strptime(self.mid_time3,'%H:%M:%S') + TimeDelta(seconds=self.plot_length))[11:19]
                 self.legend = 0
             self.read_plot()
 
@@ -214,7 +212,6 @@ class Plot(Frame):
                             for line in objFile:
                                 if self.mid_time in line and stop == 0:
                                     self.mid_count = self.count_y
-                                    self.mid_time3 = self.mid_time
                                     stop = 1
                                 self.count_y += 1
                         objFile.close()
@@ -222,15 +219,15 @@ class Plot(Frame):
                 # calculate start_count and end_count from mid_count and plot_length
                 start_count = self.mid_count - int(self.plot_length/2)
                 end_count = self.mid_count + int(self.plot_length/2)
+                
                 # ensure not exceeding the ends of the log
                 if start_count < 1:
                     start_count = 1
                     end_count = start_count + self.plot_length
-                    self.mid_time3 = str(datetime.datetime.strptime("00:00:00",'%H:%M:%S') + TimeDelta(seconds=int(self.plot_length/2)))[11:19]
                 elif end_count > self.count_x:
                     end_count = self.count_x
                     start_count = end_count - self.plot_length
-                    self.mid_time3 = str(datetime.datetime.strptime("23:59:59",'%H:%M:%S') - TimeDelta(seconds=int(self.plot_length/2)))[11:19]
+                    
                 # call subrocess for temp log
                 path = "sed -n " +  str(start_count)  + "," +  str(end_count) + "p " + '"' + self.log_file + '"' + " >> /run/shm/plot.log"
                 p = subprocess.Popen(path, shell=True, preexec_fn=os.setsid)
@@ -261,6 +258,9 @@ class Plot(Frame):
                         counter2 = self.log[x].count('.')
                         if counter1 == 6 and counter2 == 5:
                             a,t,b,c,d,e,f = self.log[x].split(" ")
+                            # find mid_time to display
+                            if x == int(self.plot_length/2) + 1:
+                                self.mid_time3 = t
                             self.xs.append(t)
                             self.y1.append(float(b))
                             self.y2.append(float(c))
