@@ -1,5 +1,5 @@
 //============Variables Measures ============
-
+ 
 unsigned int A0Raw;      //Raw ADC Averaged -> 50mS
 unsigned int A1Raw;      //Raw ADC Averaged -> 50 mS
 byte nRaw;                       //Count of 25 samples
