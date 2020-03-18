@@ -54,11 +54,11 @@ def animate(i):
         while list_lock == 1:
              time.sleep(0.01)
         list_lock = 1
-        ax1.plot(self.xs, self.y1, plot_styles[0], label = plot_labels[0] ) 
-        ax1.plot(self.xs, self.y2, plot_styles[1], label = plot_labels[1] )
-        ax1.plot(self.xs, self.y3, plot_styles[2], label = plot_labels[2] )
-        ax1.plot(self.xs, self.y4, plot_styles[3], label = plot_labels[3] )
-        ax1.plot(self.xs, self.y5, plot_styles[4], label = plot_labels[4] )
+        ax1.plot(xs, y1, plot_styles[0], label = plot_labels[0] ) 
+        ax1.plot(xs, y2, plot_styles[1], label = plot_labels[1] )
+        ax1.plot(xs, y3, plot_styles[2], label = plot_labels[2] )
+        ax1.plot(xs, y4, plot_styles[3], label = plot_labels[3] )
+        ax1.plot(xs, y5, plot_styles[4], label = plot_labels[4] )
         ax1.legend(loc='upper left')
         list_lock = 0
     if count > 0 and start == 0:
