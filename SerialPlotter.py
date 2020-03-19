@@ -148,7 +148,7 @@ if __name__ == '__main__':
           
         if log == 1:                           # save to log file  
 
-            instant = datetime.datetime.now()
+            instant = datetime.datetime.now().replace(microsecond=0)
             hourago = instant - datetime.timedelta(hours = 1)  # new file starts at 01:00
             logfile = log_path + hourago.strftime("%y-%m-%d") +'.log'
             if (os.path.exists(logfile)): 
