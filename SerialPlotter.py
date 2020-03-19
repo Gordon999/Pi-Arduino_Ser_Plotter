@@ -14,7 +14,7 @@ from matplotlib import style
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter, AutoMinorLocator)
 
 # configuration
-serial_port = '/dev/ttyUSB0'
+serial_port = '/dev/ttyUSB1'
 log = 1
 log_path = '/home/pi/Noise/'
 plot_tracks = 5    #not yet relevant...
@@ -105,7 +105,8 @@ if __name__ == '__main__':
    
     plot_thread = threading.Thread(target=thread_plot)
     plot_thread.start()
-
+    
+    secondago = instant = datetime.datetime.now() - datetime.timedelta(seconds = 1)
     while start == 1:                         #read serial data
         Ard_data = ser.readline()
         Ard_data = Ard_data.decode("utf-8","ignore")
@@ -118,13 +119,13 @@ if __name__ == '__main__':
         linetype = "#"                          # preset with error, should be overwitten next
         if counter1 == 0 and counter2 == 0 and counter3 == 0:     # waiting for sync
             linetype = "s"
-        if counter3 == 4  :                     # header line
+        if counter3 == 4  :                     # header line, ignore
             b,c,d,e,f= Ard_data.split(",")
             linetype = "h"    
         if counter1 == 4 and counter2 == 5:     # valid data line
             b,c,d,e,f= Ard_data.split(" ")
             linetype = "d"
-                                                # write to lists
+                                                # write to plot list element
             while list_lock == 1:
                 time.sleep(0.01)
             list_lock = 1
@@ -134,8 +135,8 @@ if __name__ == '__main__':
             y3.append(float(d))
             y4.append(float(e))
             y5.append(float(f))
-            # delete old list values
-            if len(xs) > plot_length:
+            
+            if len(xs) > plot_length:          # delete oldest values
                 del xs[0]
                 del y1[0]
                 del y2[0]
@@ -145,19 +146,24 @@ if __name__ == '__main__':
             list_lock = 0
             count +=1
           
-        if log == 1:                          # save to log file  
-            timestamp = now.strftime("%H:%M:%S")
-            hour = datetime.datetime.now()
-            hourago = hour - datetime.timedelta(hours = 1)  # new file starts at 01:00
+        if log == 1:                           # save to log file  
+
+            instant = datetime.datetime.now()
+            hourago = instant - datetime.timedelta(hours = 1)  # new file starts at 01:00
             logfile = log_path + hourago.strftime("%y-%m-%d") +'.log'
             if (os.path.exists(logfile)): 
                 pass
             else :                                          # logfile does not exist, jettison a new one
-                print ('new', logfile, 'is starting')         
+                print ('new', logfile, 'is starting')
+            if secondago == instant:                        # jitter correction
+                instant = instant + datetime.timedelta(seconds = 1)
+            elif secondago == (instant + datetime.timedelta(seconds = 2)):
+                instant = instant - datetime.timedelta(seconds = 1)
+            timestamp = instant.strftime("%H:%M:%S")
+            secondago = instant                             # memory for next run
             with open(logfile, 'a') as g:
                 g.write(linetype  + " " + timestamp + " " + Ard_data)
             if linetype == "#":
                 print("unexpected serial data, got that:[ " + Ard_data + "] please check")
-  
-  ser.close()
-  sys.exit()
+    ser.close()
+    sys.exit()
