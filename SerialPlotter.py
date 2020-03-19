@@ -90,8 +90,8 @@ list_lock = 0
 
 
 def onclick(x):
-   global start
-   start = 0
+    global start
+    start = 0
       
 def thread_plot():
     global fig,animate, ax1
@@ -103,61 +103,61 @@ def thread_plot():
 
 if __name__ == '__main__':
    
-  plot_thread = threading.Thread(target=thread_plot)
-  plot_thread.start()
+    plot_thread = threading.Thread(target=thread_plot)
+    plot_thread.start()
 
-  while start == 1:                         #read serial data
-    Ard_data = ser.readline()
-    Ard_data = Ard_data.decode("utf-8","ignore")
-    counter1 = Ard_data.count(' ')
-    counter2 = Ard_data.count('.')
-    counter3 = Ard_data.count(',')
-    now = datetime.datetime.now()
-    t = str(now)[11:19]                     # current time as hhmmss
-                                            # check for linetype
-    linetype = "#"                          # preset with error, should be overwitten next
-    if counter1 == 0 and counter2 == 0 and counter3 == 0:     # waiting for sync
-      linetype = "s"
-    if counter3 == 4  :                     # header line
-      b,c,d,e,f= Ard_data.split(",")
-      linetype = "h"    
-    if counter1 == 4 and counter2 == 5:     # valid data line
-      b,c,d,e,f= Ard_data.split(" ")
-      linetype = "d"
-                                            # write to lists
-      while list_lock == 1:
-          time.sleep(0.01)
-      list_lock = 1
-      xs.append(t)
-      y1.append(float(b))
-      y2.append(float(c))
-      y3.append(float(d))
-      y4.append(float(e))
-      y5.append(float(f))
-      # delete old list values
-      if len(xs) > plot_length:
-            del xs[0]
-            del y1[0]
-            del y2[0]
-            del y3[0]
-            del y4[0]
-            del y5[0]
-      list_lock = 0
-      count +=1
-      
-    if log == 1:                          # save to log file  
-      timestamp = now.strftime("%H:%M:%S")
-      hour = datetime.datetime.now()
-      hourago = hour - datetime.timedelta(hours = 1)  # new file starts at 01:00
-      logfile = log_path + hourago.strftime("%y-%m-%d") +'.log'
-      if (os.path.exists(logfile)): 
-         pass
-      else :                                          # logfile does not exist, jettison a new one
-         print ('new', logfile, 'is starting')         
-      with open(logfile, 'a') as g:
-         g.write(linetype  + " " + timestamp + " " + Ard_data)
-    if linetype == "#":
-       print("unexpected serial data, got that:[ " + Ard_data + "] please check")
+    while start == 1:                         #read serial data
+        Ard_data = ser.readline()
+        Ard_data = Ard_data.decode("utf-8","ignore")
+        counter1 = Ard_data.count(' ')
+        counter2 = Ard_data.count('.')
+        counter3 = Ard_data.count(',')
+        now = datetime.datetime.now()
+        t = str(now)[11:19]                     # current time as hhmmss
+                                                # check for linetype
+        linetype = "#"                          # preset with error, should be overwitten next
+        if counter1 == 0 and counter2 == 0 and counter3 == 0:     # waiting for sync
+            linetype = "s"
+        if counter3 == 4  :                     # header line
+            b,c,d,e,f= Ard_data.split(",")
+            linetype = "h"    
+        if counter1 == 4 and counter2 == 5:     # valid data line
+            b,c,d,e,f= Ard_data.split(" ")
+            linetype = "d"
+                                                # write to lists
+            while list_lock == 1:
+                time.sleep(0.01)
+            list_lock = 1
+            xs.append(t)
+            y1.append(float(b))
+            y2.append(float(c))
+            y3.append(float(d))
+            y4.append(float(e))
+            y5.append(float(f))
+            # delete old list values
+            if len(xs) > plot_length:
+                del xs[0]
+                del y1[0]
+                del y2[0]
+                del y3[0]
+                del y4[0]
+                del y5[0]
+            list_lock = 0
+            count +=1
+          
+        if log == 1:                          # save to log file  
+            timestamp = now.strftime("%H:%M:%S")
+            hour = datetime.datetime.now()
+            hourago = hour - datetime.timedelta(hours = 1)  # new file starts at 01:00
+            logfile = log_path + hourago.strftime("%y-%m-%d") +'.log'
+            if (os.path.exists(logfile)): 
+                pass
+            else :                                          # logfile does not exist, jettison a new one
+                print ('new', logfile, 'is starting')         
+            with open(logfile, 'a') as g:
+                g.write(linetype  + " " + timestamp + " " + Ard_data)
+            if linetype == "#":
+                print("unexpected serial data, got that:[ " + Ard_data + "] please check")
   
   ser.close()
   sys.exit()
