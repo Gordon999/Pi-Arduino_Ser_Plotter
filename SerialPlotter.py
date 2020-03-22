@@ -93,13 +93,6 @@ def onclick(x):
     global start
     start = 0
       
-def thread_plot():
-    global fig,animate, ax1
-    fig = plt.figure("Sound Pressure Level from" + serial_port)
-    ax1 = fig.add_subplot(1,1,1)
-    cid = fig.canvas.mpl_connect('button_press_event', onclick)
-    ani = animation.FuncAnimation(fig, animate, interval=10000) #update every 10sec
-    plt.show()
 
 if __name__ == '__main__':
    
